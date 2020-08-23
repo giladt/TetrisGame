@@ -1,0 +1,99 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Poiret+One&family=Sacramento&display=swap');
+
+body {
+  margin: 0;
+  padding 0;
+  background-color: black;
+  background-image: url("https://images.unsplash.com/photo-1502989642968-94fbdc9eace4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2734&q=80");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  font-family: 'Anton', sans-serif;
+  font-size: 16px;
+
+  color: white;
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+}
+
+#app {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-basis: 1rem;
+  flex: 1;
+  height: calc(90vh - 1rem);
+  flex-direction: column;
+}
+
+#app>h1 {
+  font-family: 'Poiret One', sans-serif;
+  font-size: 3rem;
+
+  text-align: center;
+  margin-top: 0;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  flex-wrap: wrap;
+}
+
+@media screen and (max-width: 895px) {
+  .game-info {
+    visibility: hidden;
+  }
+}
+
+@media screen and (min-width: 896px){
+  .game-info {
+    visibility: visible;
+  }
+}
+
+.game-info {
+  height: 50%;
+  margin: 0 3rem;
+  background: #666; //linear-gradient(135deg, #000 0%, #999 15%, wheat 40%, wheat 60%, #999 85%, #000 100%);
+  align-items: top;
+}
+
+.game-info,
+.grid {
+  display: flex;
+  flex-direction: column;
+  width: clamp(15rem, 95vw, 25rem);
+  border-radius: 5px;
+}
+
+.grid {
+  height: clamp(30rem, calc(90vh - 10rem), 75vh);
+  box-shadow: 0px 0px 20px 10px #aaa;
+}
+
+.col {
+  flex: 1;
+  border: 0.5pt solid #333;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.row {
+  display: flex;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+}
+
+.block-cell {
+  border: 0.5pt solid white;
+  border-radius: 3px;
+  box-shadow: inset -2px 2px 4px rgba(0,0,0,0.5), 
+              inset 2px 2px 4px rgba(255,255,255,0.75);
+}
+
