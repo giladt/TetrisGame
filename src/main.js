@@ -11,22 +11,40 @@ export default class Main {
 
   
   run() {
-    function keyLog(e){
-      // if(e.keyCode === 81) 
-      clearInterval(loop); // 'q - quit'
+    function keyLog(e,blocks){
+      switch(e.keyCode){
+        case(81): 
+          clearInterval(loop); // 'q - quit'
+          break;
+        case(37): 
+          blocks.move('L'); 
+          break;
+        case(39): 
+          blocks.move('R');
+          break;
+        case(40): 
+          blocks.move('D');
+          break;
+        case(38): 
+          blocks.move('U');
+          break;  
+      }    
     }
 
     this.stage.setup('Javascript Tetris Game - 2020');
     this.blocks.init();
     
-    
-    const loop = setInterval(() => {
-      this.blocks.drawBlock();
-      this.blocks.blockPosition.y++;
+    // const loop = setInterval(() => {
 
-      // clearInterval(loop);
-    }, 1000);
-    document.addEventListener('keydown', keyLog);
+    //   if (!this.blocks.collides()) {
+    //     // this.blocks.move('D');
+    //   } else {
+    //     this.blocks.pickRandomBlock();
+    //   } 
+    // }, 250);
+
+    document.addEventListener('keydown', 
+      (e) => keyLog(e, this.blocks));
       
   }
 

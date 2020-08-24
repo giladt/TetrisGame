@@ -3,7 +3,7 @@ export default class Stage {
     this.gridElement = undefined;
     this.gridSize = {
       x: 10,
-      y: 24
+      y: 16
     }
   }
 

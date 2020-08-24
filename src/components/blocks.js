@@ -5,60 +5,59 @@ export default class Blocks {
     let stage = new Stage();
 
     this.blocks = {
-      '0': '0',
       'I': {
         shape: [
-          [0,0,0,0], // [0,1,0,0],
-          [1,1,1,1], // [0,1,0,0],
-          [0,0,0,0], // [0,1,0,0]
-          [0,0,0,0], // [0,1,0,0]
+          ['0','0','0','0'], // ['0','I','0','0'],
+          ['I','I','I','I'], // ['0','I','0','0'],
+          ['0','0','0','0'], // ['0','I','0','0']
+          ['0','0','0','0'], // ['0','I','0','0']
         ],
         color: '#00f0f0' // Light-Blue
       },
       'L': {
         shape: [
-          [0,1,0], // [0,0,1],
-          [0,1,0], // [1,1,1],
-          [0,1,1], // [0,0,0]
+          ['0','L','0'], // ['0','0','L'],
+          ['0','L','0'], // ['L','L','L'],
+          ['0','L','L'], // ['0','0','0']
         ],
         color: '#f0a000' // Orange
       },
       'J': {
         shape: [
-          [0,1,0], // [0,0,0],
-          [0,1,0], // [1,1,1],
-          [1,1,0], // [0,0,1]
+          ['0','J','0'], // ['0','0','0'],
+          ['0','J','0'], // ['J','J','J'],
+          ['J','J','0'], // ['0','0','J']
         ],
         color: '#0000f0' // Blue
       },
       'T': {
         shape: [
-          [0,1,0], // [0,1,0],
-          [0,1,1], // [1,1,1],
-          [0,1,0], // [0,0,0]
+          ['0','T','0'], // ['0','T','0'],
+          ['0','T','T'], // ['T','T','T'],
+          ['0','T','0'], // ['0','0','0']
         ],
         color: '#a000f0' // Purple
       },
       'O': {
         shape: [
-          [1,1], // [1,1],
-          [1,1], // [1,1]
+          ['O','O'], // ['O','O'],
+          ['O','O'], // ['O','O']
         ],
         color: '#f0f000' // Yellow
       },
       'S': {
         shape: [
-          [0,1,1], // [1,0,0],
-          [1,1,0], // [1,1,0],
-          [0,0,0], // [0,1,0]
+          ['0','S','S'], // ['S','0','0'],
+          ['S','S','0'], // ['S','S','0'],
+          ['0','0','0'], // ['0','S','0']
         ],
         color: '#00f000' // Green
       },
       'Z': {
         shape: [
-          [1,1,0], // [0,1,0],
-          [0,1,1], // [1,1,0],
-          [0,0,0], // [1,0,0],
+          ['Z','Z','0'], // ['0','Z','0'],
+          ['0','Z','Z'], // ['Z','Z','0'],
+          ['0','0','0'], // ['Z','0','0'],
         ],
         color: '#f00000' // Red
       },
@@ -77,132 +76,146 @@ export default class Blocks {
     this.i = 0;
   }
 
-  drawBlock(){
-    const shape = this.blocks[this.currentBlock].shape;
+  updateGrid(){
+    for(let row in this.store){
+      for(let col in this.store[+row]){
+        let el = document.querySelector(`.r${+row}>.c${+col}`);
+        el.classList.remove('block-cell');
+        el.style = `background-color: none}`;
+
+        if (this.store[+row][+col] !== '0'){
+          el.classList.add('block-cell');
+          el.style = `background-color: ${this.blocks[this.store[+row][+col]].color}`;
+        }
+      }
+    }
+  }
+
+  updateStore(action = 'draw'){
+    const current_block = this.currentBlock;
+    const store = JSON.parse(JSON.stringify(this.store));
+    const block = this.blocks[current_block];
     const shape_pos = this.blockPosition;
 
-    function cleanGrid(box){
-      if(box.center.y + box.row - 1 >= 0){
-        const clean_row = [...box.grid[box.center.y + box.row - 1]];
-        clean_row[Math.round(box.center.x - (shape[box.row].length / 2)) + box.col] = 2;
-        box.grid[box.center.y + box.row - 1] = [...clean_row]; 
-      }
+    for(let row in block.shape){
+      for(let col in block.shape[+row]){
+        const grid_pos ={
+          x: Math.round(shape_pos.x - block.shape[(+row)].length / 2) + (+col),
+          y: shape_pos.y + (+row)
+        };
 
-      return true;
-    }
-
-    function placeBlockInGrid(box){
-
-      if (cleanGrid(box)) {
-        const new_row = [...box.grid[box.center.y + box.row]];
-        new_row[Math.round(box.center.x - (shape[box.row].length / 2)) + box.col] = shape[box.row][box.col];
-        box.grid[box.center.y + box.row] = [...new_row];
-      }
-      return box.grid;
-    }
-    
-    for(let row in shape){
-      for(let col in shape[+row]){
-        // this.store[shape_pos.y + (+row)][Math.round(shape_pos.x - (shape[+row].length / 2)) + (+col)] = 1; 
-        this.store = placeBlockInGrid({
-          center: shape_pos,
-          row: +row,
-          col: +col,
-          grid: this.store
-        });
+        if(store[grid_pos.y] && store[0][grid_pos.x]) {
+          store[grid_pos.y][grid_pos.x] = (action === 'clear')? 
+            '0' : 
+            block.shape[+row][+col];
+        }
       }
     }
 
-    console.clear();
-    console.log(this.i++, this.currentBlock);
-    this.store.forEach(row=>console.log(row));
+    this.store = JSON.parse(JSON.stringify(store));
+  }
+
+  _edgePos(pos, arr){
+    return Math.floor(pos - Math.round(arr.length / 2));
+  }
+
+  pickRandomBlock(){
+    let blockTypes = Object.keys(this.blocks);
+
+    this.currentBlock = blockTypes[Math.floor(Math.random() * blockTypes.length)];
+    this.blockPosition.y = 0;
+    this.blockPosition.x = 5;
+  }
+  
+  _collides(){
+    const store = JSON.parse(JSON.stringify(this.store));
+    const block_segment = this.blocks[this.currentBlock].shape;
+
+    const pos = {
+      x: this.blockPosition.x,
+      y: this.blockPosition.y,
+    };
+
+    console.log(pos);
+    for(let row in this.store){
+      for(let block_row in block_segment){
+        for(let col in store[row]) {
+          for(let block_col in block_segment[+block_row]){
+            // console.log(pos.x + (+block_col), pos.x, block_col);
+
+            if(block_segment[+block_row][+block_col] !== '0' && 
+              (
+                pos.x + (+block_col) > this.store[+block_row].length ||
+                pos.x + (+block_col) <= 0 ||
+                pos.y + (+block_row) >= this.store.length || 
+                pos.y + (+block_row) < 0
+              ))  return true;
+
+            if(store[row][col] !== '0' && block_segment[block_row][block_col] !== '0') {
+              console.log('block collision');
+              return true;
+            }
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  move(direction){
+    this.updateStore('clear');
+
+    switch(direction){
+      case 'D':
+        this.blockPosition.y++;
+        console.log(this._collides());
+        if(this._collides()) this.pickRandomBlock();
+        break;
+      case 'U':
+        this.blockPosition.y--;
+        console.log(this._collides());
+        if(this._collides()) this.blockPosition.y++;
+        break;
+      case 'L':
+        this.blockPosition.x--;
+        console.log(this._collides());
+        if(this._collides()) this.blockPosition.x++;
+        break;
+      case 'R':
+        this.blockPosition.x++;
+        console.log(this._collides());
+        if(this._collides()) this.blockPosition.x--;
+        break;
+    }
+    this.updateStore();
+    this.updateGrid();
+      // for(let row in this.store){
+      //   console.log(row,this.store[row]);
+      // }
   }
 
   init() {
+    this.store = Array(this.gridSize.y).fill(Array(this.gridSize.x).fill('0'));
 
-    let blockTypes = Object.keys(this.blocks);
-    this.store = Array(this.gridSize.y).fill(Array(this.gridSize.x).fill(0));
-
-    this.currentBlock = blockTypes[Math.floor(Math.random() * blockTypes.length)];
+    this.pickRandomBlock();
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*
 
-    function applyColor(x_pos, y_pos) {
-      const cell = document.querySelector(`.r${y_pos}>.c${x_pos}`);
-      cell.classList.add('block-cell');
-      cell.style.backgroundColor = block.color;
-    }
-
-    function clearColor(x_pos, y_pos) {
-      if(y_pos < 0) return;
-
-      let cell = document.querySelector(`.r${y_pos}>.c${x_pos}`);
-      cell.classList.remove('block-cell');
-      cell.style.backgroundColor = `rgb(${64 + (y_pos % 2) * 15}, 64, 64)`;
-    }
-
+    let shape_pos = this.blockPosition;
     let block = this.blocks[this.currentBlock];
+    console.log('current',this.currentBlock);
+    console.log('block',block.shape, shape_pos.y);
 
-    function c(x,y,r,c){
-      clearColor(
-        x + (c - Math.round((block.shape[0].length) / 2 + 1)),
-        y + r
-      );
-    }
+    let grid = [...this.store]
+      .slice(this._edgePos(shape_pos.y + 1, block.shape),block.shape.length);
+      // .map(row => row.slice(this._edgePos.x,block.shape[0]),block.shape[0].length);    
+    console.log('grid',grid, shape_pos.y);
 
-    function t(x,y,r,c){
-      if(block.shape[r][c] === 1) {
-        applyColor(
-          x + (c - Math.round((block.shape[r].length) / 2 + 1)), 
-          y + (r)
-        );
-      }
-    }
-    
-    for(let cellCol in block.shape){
-      for(let cellRow in block.shape[+cellCol]){
-        c(this.blockPosition.x,this.blockPosition.y, +cellRow, +cellCol);
-        t(this.blockPosition.x,this.blockPosition.y, +cellRow, +cellCol);
-      }      
-    }
+    return (shape_pos.y >= this.store.length);
 
 */
+
+
+
