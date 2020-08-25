@@ -1,51 +1,85 @@
 import Stage from './components/stage.js';
-import Blocks from './components/blocks.js';
+import Board from './components/board.js';
 
 export default class Main {
   constructor(){
     this.state = "";
     this.stage = new Stage();
-    this.blocks = new Blocks();
-    this.loop = null; 
+    this.board = new Board();
   }
 
-  
   run() {
-    function keyLog(e,blocks){
+    let intervalID;
+    let board = this.board;
+    let stage = this.stage;
+
+    function keyLog(e,board){
       switch(e.keyCode){
         case(81): 
-          clearInterval(loop); // 'q - quit'
+          board.gameIsOver = true;
+          endGame();
           break;
         case(37): 
-          blocks.move('L'); 
+          board.move('L'); 
           break;
         case(39): 
-          blocks.move('R');
+          board.move('R');
           break;
         case(40): 
-          blocks.move('D');
+          board.move('D');
           break;
         case(38): 
-          blocks.move('U');
+          board.move('U');
           break;  
       }    
     }
 
-    this.stage.setup('Javascript Tetris Game - 2020');
-    this.blocks.init();
-    
-    // const loop = setInterval(() => {
+    function endGame(){
 
-    //   if (!this.blocks.collides()) {
-    //     // this.blocks.move('D');
-    //   } else {
-    //     this.blocks.pickRandomBlock();
-    //   } 
-    // }, 250);
+      const grid = document.querySelector('.grid');
+      let rows = grid.children;
 
-    document.addEventListener('keydown', 
-      (e) => keyLog(e, this.blocks));
+      let new_row = document.createElement('div');
+
+      new_row.className='over';
+      new_row.innerText = "This game is soooo over!";
+
+      if(board.gameIsOver) {
+        console.log('end it', intervalID);
+        clearInterval(intervalID);
+      }
+
+      [...rows].forEach(row => row.remove());
+      grid.appendChild(new_row);
+
+      setTimeout(()=>new_row.classList.add('full'), 0);
+
+    }
+
+    function drop(){
+      board.move('D');
+      if(board.gameIsOver) endGame();
+    }
+
+
+    function score_init(){
+      const elGameInfo = document.querySelector('.game-info');
+      elGameInfo.innerHTML = `<h1>Your Score</h1><p class='score'>${board.score} points</p>`;
+    }
+
+    function startGame(){
+      stage.setup('Javascript Tetris Game - 2020');
+      board.init();
+      score_init();
       
+      intervalID = setInterval(drop, 500);
+
+      document.addEventListener('keydown', 
+        (e) => keyLog(e, board));
+    }
+
+    startGame();
   }
 
+  
 }

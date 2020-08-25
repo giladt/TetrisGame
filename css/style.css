@@ -70,6 +70,8 @@ body {
   flex-direction: column;
   width: clamp(15rem, 95vw, 25rem);
   border-radius: 5px;
+  overflow: hidden;
+
 }
 
 .grid {
@@ -90,10 +92,30 @@ body {
   padding: 0;
 }
 
-.block-cell {
+.tetrominos-cell {
   border: 0.5pt solid white;
   border-radius: 3px;
   box-shadow: inset -2px 2px 4px rgba(0,0,0,0.5), 
               inset 2px 2px 4px rgba(255,255,255,0.75);
 }
 
+.over {
+  transition: 3s height ease-in-out;
+  height: 10px;
+  bottom: 0;
+  width: calc(100% - 4rem);
+  display: inline-flex;
+  flex-direction: column-reverse;
+  background: gray;
+  align-items: center;
+  font-size: 6rem;
+  text-align: center;
+  font-family: 'Sacramento';
+  overflow: hidden;
+  padding: 2rem;
+}
+
+.full {
+  height: 100%;
+  top: 10%;
+}
