@@ -4,7 +4,7 @@ export default class Stage {
     this.gridSize = {
       x: 10,
       y: 16
-    }
+    };
   }
 
   createGrid(cols, rows) {

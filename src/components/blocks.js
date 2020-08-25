@@ -7,10 +7,10 @@ export default class Blocks {
     this.blocks = {
       'I': {
         shape: [
-          ['0','0','0','0'], // ['0','I','0','0'],
-          ['I','I','I','I'], // ['0','I','0','0'],
-          ['0','0','0','0'], // ['0','I','0','0']
-          ['0','0','0','0'], // ['0','I','0','0']
+          ['0','I','0','0'], // ['0','I','0','0'],
+          ['0','I','0','0'], // ['0','I','0','0'],
+          ['0','I','0','0'], // ['0','I','0','0']
+          ['0','I','0','0'], // ['0','I','0','0']
         ],
         color: '#00f0f0' // Light-Blue
       },
@@ -71,48 +71,74 @@ export default class Blocks {
   
     this.gridElement =  stage.getGridElement();
     this.gridSize = stage.gridSize;
-    this.store = [];
+    this.landed = [];
 
     this.i = 0;
   }
 
-  updateGrid(){
-    for(let row in this.store){
-      for(let col in this.store[+row]){
-        let el = document.querySelector(`.r${+row}>.c${+col}`);
+
+  refreshGrid(){
+    const shape_pos = this.blockPosition;
+
+    for(let row in this.landed){
+      for(let col in this.landed[row]){
+        const grid_pos ={
+          x: (+col),
+          y: (+row)
+        };
+
+        let el = document.querySelector(`.r${grid_pos.y}>.c${grid_pos.x}`);
         el.classList.remove('block-cell');
         el.style = `background-color: none}`;
 
-        if (this.store[+row][+col] !== '0'){
+        if (this.landed[+row][+col] !== '0'){
           el.classList.add('block-cell');
-          el.style = `background-color: ${this.blocks[this.store[+row][+col]].color}`;
+          el.style = `background-color: ${this.blocks[this.landed[+row][+col]].color}`;
         }
       }
     }
   }
 
-  updateStore(action = 'draw'){
-    const current_block = this.currentBlock;
-    const store = JSON.parse(JSON.stringify(this.store));
-    const block = this.blocks[current_block];
+  dropBlock(){
+    const block = this.blocks[this.currentBlock];
     const shape_pos = this.blockPosition;
 
     for(let row in block.shape){
-      for(let col in block.shape[+row]){
+      for(let col in block.shape[row]){
         const grid_pos ={
           x: Math.round(shape_pos.x - block.shape[(+row)].length / 2) + (+col),
           y: shape_pos.y + (+row)
         };
 
-        if(store[grid_pos.y] && store[0][grid_pos.x]) {
-          store[grid_pos.y][grid_pos.x] = (action === 'clear')? 
-            '0' : 
-            block.shape[+row][+col];
+        let el = document.querySelector(`.r${grid_pos.y}>.c${grid_pos.x}`);
+        if (el && block.shape[+row][+col] !== '0'){
+          el.classList.add('block-cell');
+          el.style = `background-color: ${block.color}`;
+        }
+
+      }
+    }
+  }
+
+  updateLanded(){
+    const current_block = this.currentBlock;
+    const landed = JSON.parse(JSON.stringify(this.landed));
+    const block = this.blocks[current_block].shape;
+    const player = this.blockPosition;
+
+    for(let row=0; row < block.length; row++){
+      for(let col=0; col < block[row].length; col++){
+
+        if(block[row][col] !== '0') {
+          landed[player.y+row][player.x - 1 + col] = block[row][col];
         }
       }
     }
 
-    this.store = JSON.parse(JSON.stringify(store));
+    for(let row of landed){
+      console.log(row);
+    }
+    this.landed = JSON.parse(JSON.stringify(landed));
   }
 
   _edgePos(pos, arr){
@@ -128,94 +154,59 @@ export default class Blocks {
   }
   
   _collides(){
-    const store = JSON.parse(JSON.stringify(this.store));
-    const block_segment = this.blocks[this.currentBlock].shape;
+    const landed = JSON.parse(JSON.stringify(this.landed));
+    const block = this.blocks[this.currentBlock].shape;
 
-    const pos = {
-      x: this.blockPosition.x,
-      y: this.blockPosition.y,
-    };
+    const player = {...this.blockPosition};
 
-    console.log(pos);
-    for(let row in this.store){
-      for(let block_row in block_segment){
-        for(let col in store[row]) {
-          for(let block_col in block_segment[+block_row]){
-            // console.log(pos.x + (+block_col), pos.x, block_col);
+    for(let row=0; row < block.length; row++){
+      for(let col=0; col < block[row].length; col++){
 
-            if(block_segment[+block_row][+block_col] !== '0' && 
-              (
-                pos.x + (+block_col) > this.store[+block_row].length ||
-                pos.x + (+block_col) <= 0 ||
-                pos.y + (+block_row) >= this.store.length || 
-                pos.y + (+block_row) < 0
-              ))  return true;
+        if(block[row][col] !== '0') {
+          console.log('check-collision',block[row],player.y, row,player.x,col);
+          if(
+            player.x - 1 + col >= landed[row].length || 
+            player.x - 1 + col < 0 ||
+            player.y + row >= landed.length || 
+            player.y + row < 0
+          ) {
+            console.log('edge collision');
+            return true;
+          }
 
-            if(store[row][col] !== '0' && block_segment[block_row][block_col] !== '0') {
-              console.log('block collision');
-              return true;
-            }
+          if(landed[player.y + row][player.x - 1 + col] !== '0') {
+            console.log('block collision');
+            return true;
           }
         }
       }
     }
+
     return false;
   }
 
   move(direction){
-    this.updateStore('clear');
+    let movements = {D:{x:0,y:1},U:{x:0,y:-1},L:{x:-1,y:0},R:{x:1,y:0}};
+    
+    this.blockPosition.x += movements[direction].x;
+    this.blockPosition.y += movements[direction].y;
+    if(this._collides()) {
+      this.blockPosition.x -= movements[direction].x;
+      this.blockPosition.y -= movements[direction].y;
 
-    switch(direction){
-      case 'D':
-        this.blockPosition.y++;
-        console.log(this._collides());
-        if(this._collides()) this.pickRandomBlock();
-        break;
-      case 'U':
-        this.blockPosition.y--;
-        console.log(this._collides());
-        if(this._collides()) this.blockPosition.y++;
-        break;
-      case 'L':
-        this.blockPosition.x--;
-        console.log(this._collides());
-        if(this._collides()) this.blockPosition.x++;
-        break;
-      case 'R':
-        this.blockPosition.x++;
-        console.log(this._collides());
-        if(this._collides()) this.blockPosition.x--;
-        break;
+      if(direction === 'D') {
+        this.updateLanded();
+        this.pickRandomBlock();
+      }
     }
-    this.updateStore();
-    this.updateGrid();
-      // for(let row in this.store){
-      //   console.log(row,this.store[row]);
-      // }
+
+    this.refreshGrid();
+    this.dropBlock();
   }
 
   init() {
-    this.store = Array(this.gridSize.y).fill(Array(this.gridSize.x).fill('0'));
+    this.landed = Array(this.gridSize.y).fill(Array(this.gridSize.x).fill('0'));
 
     this.pickRandomBlock();
   }
 }
-
-/*
-
-    let shape_pos = this.blockPosition;
-    let block = this.blocks[this.currentBlock];
-    console.log('current',this.currentBlock);
-    console.log('block',block.shape, shape_pos.y);
-
-    let grid = [...this.store]
-      .slice(this._edgePos(shape_pos.y + 1, block.shape),block.shape.length);
-      // .map(row => row.slice(this._edgePos.x,block.shape[0]),block.shape[0].length);    
-    console.log('grid',grid, shape_pos.y);
-
-    return (shape_pos.y >= this.store.length);
-
-*/
-
-
-
