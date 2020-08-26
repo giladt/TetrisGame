@@ -8,16 +8,13 @@ export default class Main {
     this.stage = new Stage();
     this.board = new Board();
     this.score = new Score();
-    this.keyListener = null;
   }
 
   run() {
-    let intervalID;
     let levelSpeed = this.levelSpeed;
     let board = this.board;
     let stage = this.stage;
     let score = this.score;
-    let keyListener = this.keyListener;
 
     function keyLog(e,board){
       console.log('keypress');
@@ -43,10 +40,12 @@ export default class Main {
 
     function startGame(e) {
       const grid = document.querySelector('.grid');
-      const over = grid.querySelector('.over');
+      const cover = grid.querySelector('.cover');
 
       [...grid.children].forEach(row => row.classList.remove('full'));
-      over.remove();
+      setTimeout(() => {
+        cover.remove();
+      }, 200); 
 
       document.removeEventListener('click', startGame);
       initGame();
@@ -58,7 +57,7 @@ export default class Main {
       let rows = grid.children;
 
       let new_row = document.createElement('div');
-      new_row.className='over noselect';
+      new_row.className='cover end-screen noselect';
       new_row.innerHTML = `
         <p>This game is soooo over!</p>
         <div class='button'>Try Again</div>
@@ -86,13 +85,13 @@ export default class Main {
     }
 
     function initGame(){
-      // stage.setup('Javascript Tetris Game - 2020');
       score.init();
       board.init();
       
       drop();
 
       document.addEventListener('keydown', handleKeyLog);
+      document.addEventListener('mouse', handleKeyLog);
     }
 
     function startScreen(){
@@ -101,7 +100,7 @@ export default class Main {
       let rows = grid.children;
 
       let new_row = document.createElement('div');
-      new_row.className='over noselect';
+      new_row.className='cover start-screen noselect';
       new_row.innerHTML = `
         <p>Let's start a game!</p>
         <div class='button'>Start now</div>
