@@ -41,15 +41,15 @@ export default class Main {
       }    
     }
 
-    function restartGame(e) {
+    function startGame(e) {
       const grid = document.querySelector('.grid');
       const over = grid.querySelector('.over');
 
-      console.log('restart', e.currentTarget);
       [...grid.children].forEach(row => row.classList.remove('full'));
       over.remove();
 
-      startGame();
+      document.removeEventListener('click', startGame);
+      initGame();
     }
 
     function endGame(){
@@ -64,12 +64,12 @@ export default class Main {
         <div class='button'>Try Again</div>
       `;
       const btnRestart = new_row.querySelector('div.button');
-      btnRestart.addEventListener('click', restartGame);
+      btnRestart.addEventListener('click', startGame);
 
       grid.appendChild(new_row);
       [...rows].forEach(row => row.classList.add('full'));
 
-      document.removeEventListener('keydown', keyListener);
+      document.removeEventListener('keydown', handleKeyLog);
     }
 
     function drop(){
@@ -81,18 +81,39 @@ export default class Main {
       }
     }
 
-    function startGame(){
-      stage.setup('Javascript Tetris Game - 2020');
+    function handleKeyLog(e){
+      keyLog(e, board);
+    }
+
+    function initGame(){
+      // stage.setup('Javascript Tetris Game - 2020');
       score.init();
       board.init();
       
       drop();
 
-      keyListener = document.addEventListener('keydown', 
-        (e) => keyLog(e, board));
+      document.addEventListener('keydown', handleKeyLog);
     }
 
-    startGame();
+    function startScreen(){
+      stage.setup('Javascript Tetris Game - 2020');
+      const grid = document.querySelector('.grid');
+      let rows = grid.children;
+
+      let new_row = document.createElement('div');
+      new_row.className='over noselect';
+      new_row.innerHTML = `
+        <p>Let's start a game!</p>
+        <div class='button'>Start now</div>
+      `;
+      const btnRestart = new_row.querySelector('div.button');
+      btnRestart.addEventListener('click', startGame);
+
+      grid.appendChild(new_row);
+      [...rows].forEach(row => row.classList.add('full'));
+    }
+
+    startScreen();
   }
 
   
