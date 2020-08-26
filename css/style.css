@@ -60,8 +60,20 @@ body {
 .game-info {
   height: 50%;
   margin: 0 3rem;
-  background: #666; //linear-gradient(135deg, #000 0%, #999 15%, wheat 40%, wheat 60%, #999 85%, #000 100%);
   align-items: top;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  padding: 1rem;
+}
+
+.game-info>h1 {
+  margin: 0;
+}
+
+.game-info>p {
+  font-size: 4rem;
+  margin: 0.2rem 1rem;
 }
 
 .game-info,
@@ -71,18 +83,17 @@ body {
   width: clamp(15rem, 95vw, 25rem);
   border-radius: 5px;
   overflow: hidden;
-
+  background: rgba(0,0,0,0.5);
+  box-shadow: 0px 0px 20px 10px #aaa;
 }
 
 .grid {
   height: clamp(30rem, calc(90vh - 10rem), 75vh);
-  box-shadow: 0px 0px 20px 10px #aaa;
 }
 
 .col {
   flex: 1;
   border: 0.5pt solid #333;
-  background-color: rgba(0,0,0,0.5);
 }
 
 .row {
@@ -90,6 +101,7 @@ body {
   flex: 1;
   margin: 0;
   padding: 0;
+  transition: 0.5s flex ease-out;
 }
 
 .tetrominos-cell {
@@ -100,8 +112,7 @@ body {
 }
 
 .over {
-  transition: 3s height ease-in-out;
-  height: 10px;
+  transition: 0.5s flex ease-in;
   bottom: 0;
   width: calc(100% - 4rem);
   display: inline-flex;
@@ -111,11 +122,47 @@ body {
   font-size: 6rem;
   text-align: center;
   font-family: 'Sacramento';
+  line-height: 0.85em;
   overflow: hidden;
   padding: 2rem;
+  flex: 0;
 }
 
-.full {
-  height: 100%;
-  top: 10%;
+.row.full {
+  flex: 0;
+  height: 0;
+}
+
+.over.full {
+  flex: 1;
+}
+
+.button {
+  width: 250px;
+  font-family: 'Poiret', sans-serif;
+  padding: 1rem;
+  line-height: 1.5em;
+  font-size: 1.5rem;
+  box-shadow: 5px 5px 20px 3px rgba(0,0,0,0.5);
+  border-radius: 1rem;
+  background-color: rgb(20 130 160 / 0.75);
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: rgb(0 100 125 / 0.75);
+}
+
+.button:active {
+  box-shadow: 3px 2px 20px 3px rgba(0,0,0,0.5);
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
 }
