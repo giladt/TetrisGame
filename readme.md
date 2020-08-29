@@ -4,7 +4,7 @@
 ![Screenshot](./assets/screenshot.png)
 ***
 
-**First (Game) project for Ironhack's Fullstack Web Development Bootcamp.**
+**Module I final project - Ironhack's Fullstack Web Development Bootcamp.**
 
 **By Gilad Tsabar**
 
@@ -22,9 +22,8 @@
 
 _source: Wikipedia_
 
-### Motivation
-
-As an ultimate fan of the Tetris game I'd always had the urge to build my own version of this wonderful game.
+## Motivation
+Since Tetris was my ultimate childhood game, I've had the urge to build my own tribute version.
 
 ## Stack
 + This game was written in vanilla ES6 Javascript. CSS3 for formatting and HTML as entry point.
@@ -43,15 +42,22 @@ __startScreen__ initialize the stage, and sets a welcome message for the user, e
 __startGame__ removes the message and reveals the board. then is the game is initialized (__initGame__) and start to __drop__ the
 
 ## Stage
-stage holds the everything related with the scene. The background image, app header and the board and score elements.
+Holds functions related to the scene. The background, app header and the board, and score elements.
 
 ## Board
-The board is a grid of DIV's. If a Tetomino is being placed on the board, the div get a block-cell class and the color style in the appropriate position. Respectively it get cleared if the block is not longer in place.
+Consists of a grid of DIV's. A div with the class 'row' for each row in the grid containing div childrens with the class 'col'. If a Tetromino is being placed on the board, the div get a block-cell class and the color style in the appropriate position. Respectively it get cleared if the block is not longer in place.
+Here are also the movement and colision checks functions 
 
 ## Score
-Score holds an header and 2 paragraph elements which get updated whenever the the score or the level is changed.
+In here there is a header and 2 paragraph elements which get updated whenever the the score or the level is changed.
 
 ---
+
+# ToDO
+Some thing planned to do at some point in the future:
++ Change the score system to award multiline cleanup.
++ Add mobile support
++ Add multiplayer support
 
 # Credits
 
