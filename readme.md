@@ -43,6 +43,8 @@ __startGame__ removes the message and reveals the board. then is the game is ini
 
 ## Stage
 Holds functions related to the scene. The background, app header and the board, and score elements.
+### createGrid(cols, rows)
+
 
 ## Board
 Consists of a grid of DIV's. A div with the class 'row' for each row in the grid containing div childrens with the class 'col'. If a Tetromino is being placed on the board, the div get a block-cell class and the color style in the appropriate position. Respectively it get cleared if the block is not longer in place.
@@ -53,7 +55,7 @@ In here there is a header and 2 paragraph elements which get updated whenever th
 
 ---
 
-# ToDO
+# ToDo
 Some thing planned to do at some point in the future:
 + Change the score system to award multiline cleanup.
 + Add mobile support
