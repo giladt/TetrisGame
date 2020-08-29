@@ -1,59 +1,55 @@
 export default class Stage {
-  constructor(){
-    this.gridElement = undefined;
-    this.gridSize = {
-      x: 10,
-      y: 16
-    };
+  constructor() {
+    this.gridSize = { x: 10, y: 16 };
   }
 
   createGrid(cols, rows) {
-    const grid = document.createElement('div');
+    let grid;
+    let rowCells = ``;
+    let colCells = ``;
+
+    for(let i = 0;i < cols; i++) colCells = colCells.concat(`<div class='col c${i}'> </div>`);
+    for(let i = 0;i < rows; i++) rowCells = rowCells.concat(`<div class='row r${i}'>${colCells}</div>`);
+
+    grid = document.createElement('div');
     grid.className = 'grid';
-    for(let rowIdx = 0; rowIdx < rows; rowIdx++){
-      const row = document.createElement('div');
-      for(let colIdx = 0; colIdx < cols; colIdx++){
-        const box = document.createElement('div');
-        box.innerText = ' ';
-        box.className = 'col c' + colIdx;
-        row.appendChild(box);
-      }
-      row.className = 'row r' + rowIdx;
-      grid.appendChild(row);
-    }
+    grid.innerHTML = rowCells;
 
-    this.gridElement = grid;
-    return this.gridElement;
-
+    return grid;
   }
 
-  createContainer(appendElements) {
-    const container = document.createElement('div');
-    container.className = 'container';
-
-    for(let elem of appendElements){
-      container.appendChild(elem);
-    }
-    return container;
-  }
-
-  createGameInfo(){
+  createGameInfo() {
     const gameInfo = document.createElement('div');
     gameInfo.className = 'game-info';
+    gameInfo.innerHTML = `
+      <article>
+        <h1>Instructions:</h1>
+        <p><- (Left key) - move left</p>
+        <p>-> (Right key) - move right</p>
+        <p> ^ (Up key) - rotate tile</p>
+        <p> q - Stop the game</p>
+        </article>
+    `;
 
     return gameInfo;
   }
   
-  getGridElement(){
-    if (!this.gridElement) this.gridElement = this.createGrid(this.gridSize.x,this.gridSize.y);
-    return this.gridElement;
+  createContainer(elements) {
+    const container = document.createElement('div');
+    container.className = 'container';
+
+    for(let element of elements) container.appendChild(element);
+
+    return container;
   }
 
-  setup(headerTitle){
-    this.gridElement = this.getGridElement();
-
-    const container = this.createContainer([this.gridElement, this.createGameInfo()]);
+  setup(headerTitle) {
     const stage = document.getElementById('app');
+
+    const container = this.createContainer([
+      this.createGrid(this.gridSize.x,this.gridSize.y), 
+      this.createGameInfo()]
+      );
     
     stage.innerHTML=`<h1>${headerTitle || ''}</h1>`;
     stage.appendChild(container);

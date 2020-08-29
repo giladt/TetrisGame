@@ -15,27 +15,20 @@ export default class Main {
     let board = this.board;
     let stage = this.stage;
     let score = this.score;
+    let gameEndMessage = {body:'', button: ''};    
 
     function keyLog(e,board){
-      console.log('keypress');
-      switch(e.keyCode){
-        case(81): 
-          board.gameIsOver = true;
-          endGame();
-          break;
-        case(37): 
-          board.move('L'); 
-          break;
-        case(39): 
-          board.move('R');
-          break;
-        case(40): 
-          board.move('D');
-          break;
-        case(38): 
-          board.move('U');
-          break;  
-      }    
+      const actions = [];
+      actions.key37 = () => board.move('L');
+      actions.key38 = () => board.move('U');
+      actions.key39 = () => board.move('R');
+      actions.key40 = () => board.move('D');
+      actions.key81 = () => {
+        gameEndMessage = {body: 'You can allways give it another try', button: 'Restart Game'};
+        board.gameIsOver = true;
+      };
+
+      (actions['key' + e.keyCode]) && actions['key' + e.keyCode]();
     }
 
     function startGame(e) {
@@ -43,30 +36,26 @@ export default class Main {
       const cover = grid.querySelector('.cover');
 
       [...grid.children].forEach(row => row.classList.remove('full'));
-      setTimeout(() => {
-        cover.remove();
-      }, 200); 
+      setTimeout(() => cover.remove(), 200); 
 
       document.removeEventListener('click', startGame);
       initGame();
     }
 
     function endGame(){
-
       const grid = document.querySelector('.grid');
-      let rows = grid.children;
 
       let new_row = document.createElement('div');
       new_row.className='cover end-screen noselect';
       new_row.innerHTML = `
-        <p>This game is soooo over!</p>
-        <div class='button'>Try Again</div>
+        <p>${gameEndMessage.body}</p>
+        <div class='button'>${gameEndMessage.button}</div>
       `;
       const btnRestart = new_row.querySelector('div.button');
       btnRestart.addEventListener('click', startGame);
 
       grid.appendChild(new_row);
-      [...rows].forEach(row => row.classList.add('full'));
+      [...grid.children].forEach(row => row.classList.add('full'));
 
       document.removeEventListener('keydown', handleKeyLog);
     }
@@ -87,7 +76,8 @@ export default class Main {
     function initGame(){
       score.init();
       board.init();
-      
+      gameEndMessage = {body: 'This game is soooo over!', button: 'Try Again'};
+
       drop();
 
       document.addEventListener('keydown', handleKeyLog);
